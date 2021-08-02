@@ -82,7 +82,10 @@ namespace cse
 		void PatchDialogHooks(void)
 		{
 			OSVERSIONINFO OSInfo;
+#pragma warning(push)
+#pragma warning(disable : 4996)
 			GetVersionEx(&OSInfo);
+#pragma warning(pop)
 			if (OSInfo.dwMajorVersion >= 6)		// if running Windows Vista/7, fix the list view selection sound
 				RegDeleteKey(HKEY_CURRENT_USER , "AppEvents\\Schemes\\Apps\\.Default\\CCSelect\\.Current");
 
