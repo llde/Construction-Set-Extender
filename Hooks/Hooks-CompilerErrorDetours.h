@@ -33,5 +33,6 @@ namespace cse
 	}
 
 		extern UInt32						ScriptCompileResultBuffer;
+		extern UInt32						SuppressWarnings;
 	}
 }

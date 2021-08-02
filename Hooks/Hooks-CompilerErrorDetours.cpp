@@ -11,6 +11,9 @@ namespace cse
 		UInt32	ScriptCompileResultBuffer = 0;	// saves the result of a compile operation so as to allow it to go on unhindered
 		UInt32	IsCurrentMessageWarning = 0;
 		UInt32  IsCurrentMessageSuppressed = 0;
+		UInt32  SuppressWarnings = 0;
+		void(__cdecl* PrintError)(const char* format, ...) = (void(__cdecl*)(const char* format, ...)) 0x00403490;
+
 		_DefineNopHdlr(RidScriptErrorMessageBox, 0x004FFFEC, 20);
 		_DefineNopHdlr(RidUnknownFunctionCodeMessage, 0x0050310C, 5);
 		_DefineHookHdlr(RerouteScriptErrors, 0x004FFF9C);
@@ -206,14 +209,37 @@ namespace cse
 			}
 		}
 
-		void __stdcall DoResultScriptErrorNotificationHook(void)
+		void __stdcall DoResultScriptErrorNotificationHook(bool success)
 		{
-			BGSEEUI->MsgBoxE(nullptr,
-							MB_TASKMODAL|MB_TOPMOST|MB_SETFOREGROUND|MB_OK,
-							"Result script compilation failed. Check the console for error messages.");
+			if (!success) {
+				BGSEEUI->MsgBoxE(nullptr,
+					MB_TASKMODAL | MB_TOPMOST | MB_SETFOREGROUND | MB_OK,
+					"Result script compilation failed. Check the console for error messages.");
+			}
+			else   if ((IsCurrentMessageWarning || IsCurrentMessageSuppressed)   && !SuppressWarnings){
+				SuppressWarnings = (BGSEEUI->MsgBoxW(nullptr, MB_TASKMODAL | MB_TOPMOST | MB_SETFOREGROUND | MB_OKCANCEL,
+					"Result Script compilation  has warnings, check the console for details.")  == IDCANCEL) ;
+			}
 		}
 
-		#define _hhName		ResultScriptErrorNotification
+#define _hhName		ResultScriptErrorNotification
+		_hhBegin()
+		{
+			_hhSetVar(Retn, 0x005035F3);
+			_hhSetVar(Call, 0x00503330);
+			__asm
+			{
+				mov		TESScriptCompiler::PreventErrorDetours, 1
+				call	_hhGetVar(Call)
+				mov		TESScriptCompiler::PreventErrorDetours, 0
+				pushad
+				push	eax
+				call	DoResultScriptErrorNotificationHook
+				popad
+				jmp		_hhGetVar(Retn)
+			}
+		}
+/*		#define _hhName		ResultScriptErrorNotification
 		_hhBegin()
 		{
 			_hhSetVar(Retn, 0x005035F3);
@@ -234,7 +260,7 @@ namespace cse
 
 				jmp		_hhGetVar(Retn)
 			}
-		}
+		}*/
 
 		#define _hhName		MaxScriptSizeExceeded
 		_hhBegin()
@@ -248,16 +274,39 @@ namespace cse
 			}
 		}
 
+		void __cdecl PrintErrorCall(const char* format, ...) {
+			va_list va;
+			va_start(va, format);
+			char* buffer = (char*)calloc(1024, sizeof(char));
+			vsprintf_s(buffer, 1024, format, va);
+			char* hold = nullptr;
+			for (size_t i = 0; i < 1024; i++) {
+				if (buffer[i] == '\n') {
+					hold = buffer + i + 1;
+					break;
+				}
+			}
+			UInt32 len = strlen(hold);
+			if (len > 9 && 0 == strncmp(hold, "[WARNING]", 9)) {
+				memmove(hold, hold +1, 8);
+				hold[7] = ':';
+				hold[8] = ' ';
+				for (UInt8 i = 1; i < 7; i++) hold[i] = tolower(hold[i]) ;
+			}
+			PrintError("%s", buffer);
+			free(buffer);
+		}
+
 		#define _hhName		PrintCompilerErrorToConsoleOverride
 		_hhBegin()
 		{
 			_hhSetVar(Retn, 0x00500006 + 5);
-			_hhSetVar(Call, 0x00403490);
+//			_hhSetVar(Call, 0x00403490);
 			__asm
 			{
 				test	TESScriptCompiler::PrintErrorsToConsole, 1
 				jz		SKIP
-				call	_hhGetVar(Call)
+				call	PrintErrorCall
 			SKIP:
 				jmp		_hhGetVar(Retn)
 			}
