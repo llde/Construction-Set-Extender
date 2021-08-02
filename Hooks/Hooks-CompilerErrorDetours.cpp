@@ -8,8 +8,9 @@ namespace cse
 {
 	namespace hooks
 	{
-		UInt32								ScriptCompileResultBuffer = 0;	// saves the result of a compile operation so as to allow it to go on unhindered
-
+		UInt32	ScriptCompileResultBuffer = 0;	// saves the result of a compile operation so as to allow it to go on unhindered
+		UInt32	IsCurrentMessageWarning = 0;
+		UInt32  IsCurrentMessageSuppressed = 0;
 		_DefineNopHdlr(RidScriptErrorMessageBox, 0x004FFFEC, 20);
 		_DefineNopHdlr(RidUnknownFunctionCodeMessage, 0x0050310C, 5);
 		_DefineHookHdlr(RerouteScriptErrors, 0x004FFF9C);
@@ -91,8 +92,19 @@ namespace cse
 
 		void __stdcall DoRerouteScriptErrorsHook(UInt32 Line, const char* Message)
 		{
+			IsCurrentMessageWarning = 0;
+			IsCurrentMessageSuppressed = 0;
+			if (0 == strncmp("[SUPPRESSED]", Message, 12)) {
+				Message = Message + 12; 
+				IsCurrentMessageSuppressed = 1;
+			}
+			if (0 == strncmp("[WARNING]", Message, 9)) {
+				Message = Message + 9;
+				IsCurrentMessageWarning = 1;
+			}
+			if (!IsCurrentMessageWarning && !IsCurrentMessageSuppressed) ScriptCompileResultBuffer = 0;
 			if (TESScriptCompiler::PreventErrorDetours == false)	// don't handle when compiling result scripts or recompiling
-				TESScriptCompiler::AuxiliaryErrorDepot.push_back(TESScriptCompiler::CompilerErrorData(Line, Message,false));
+				TESScriptCompiler::AuxiliaryErrorDepot.push_back(TESScriptCompiler::CompilerErrorData(Line, Message, IsCurrentMessageWarning || IsCurrentMessageSuppressed));
 		}
 
 		#define _hhName		RerouteScriptErrors
@@ -104,7 +116,7 @@ namespace cse
 				mov     [esp + 0x18], ebx
 				mov     [esp + 0x1C], bx
 
-				mov		ScriptCompileResultBuffer, 0
+//				mov		ScriptCompileResultBuffer, 0
 				lea     edx, [esp + 0x20]
 				pushad
 				push	edx
