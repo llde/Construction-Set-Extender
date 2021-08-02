@@ -6,7 +6,6 @@ namespace cse
 	{
 		void PatchCompilerErrorDetours();
 
-		_DeclareNopHdlr(RidScriptErrorMessageBox, "prevents the vanilla script error message box from being displayed");
 		_DeclareNopHdlr(RidUnknownFunctionCodeMessage, "removes a redundant error message");
 		_DeclareMemHdlr(RerouteScriptErrors, "reroutes script compilation error messages to the parent script editor");
 		_DeclareMemHdlr(CompilerEpilogCheck, "adds support for the above");
@@ -15,7 +14,8 @@ namespace cse
 		_DeclareMemHdlr(CheckLineLengthLineCount, "fixes a bug in the compiler that causes empty lines to be skipped when line numbers are counted");
 		_DeclareMemHdlr(ResultScriptErrorNotification, "displays a notification when result scripts fail to compile");
 		_DeclareMemHdlr(MaxScriptSizeExceeded, "ensures compilation breaks immediately");
-		_DeclareMemHdlr(PrintCompilerErrorToConsoleOverride, "adds support to conditionally disable the printing of compiler errors to the console");
+		_DeclareMemHdlr(OverrideMessageBox, "Override the message box instance to enable or disable it conditionally ");
+
 
 #define GetErrorMemHdlr(hookaddr)								CompilerErrorOverrideHandler##hookaddr
 #define DefineCompilerErrorOverrideHook(hookaddr, jmpaddr, stackoffset)		\

@@ -406,10 +406,10 @@ void DiskSync::CompileScript(SyncedScriptData^ SyncedScript, String^ ImportedScr
 		for (int i = 0; i < CompilationResult->CompileErrorData.Count; i++)
 		{
 			String^ Message = gcnew String(CompilationResult->CompileErrorData.ErrorListHead[i].Message);
-			int Line = CompilationResult->CompileErrorData.ErrorListHead[i].Line;
+			int Line = CompilationResult->CompileErrorData.ErrorListHead[i].Line;  
 			if (Line < 1)
 				Line = 1;
-
+			//TODO add warnings here too?
 			OutMessages->Add(FormatLogMessage(Line, Message, true));
 		}
 	}

@@ -188,7 +188,7 @@
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>ComCtl32.lib;shell32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>ComCtl32.lib;shell32.lib;$(BGSEEBaseLibPath_RELEASE)\BGSEditorExtenderBase.lib;$(XSECommonIncludePath)\$(ConfigurationName)\common.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <ModuleDefinitionFile>
       </ModuleDefinitionFile>
@@ -206,9 +206,8 @@
     </Link>
     <PostBuildEvent>
       <Message>Installing DLL...</Message>
-      <Command>copy "$(TargetPath)" "$(OblivionPath)\Data\obse\plugins\$(TargetFileName)"
-copy "$(TargetPath)" "$(DropboxPath)\CSE Once-In-Awhile'lies\Data\OBSE\Plugins\$(TargetFileName)"
-copy "$(TargetDir)$(TargetName).pdb" "$(DropboxPath)\CSE Once-In-Awhile'lies\Data\OBSE\Plugins\$(TargetName).pdb"
+      <Command>copy "$(TargetPath)" "$(OblivionPath)\Data\obse\plugins\$(TargetFileName)" 
+copy "$(TargetDir)$(TargetName).pdb" "$(OblivionPath)\Data\obse\plugins\$(TargetName).pdb"
 </Command>
     </PostBuildEvent>
     <PreBuildEvent>
@@ -244,7 +243,7 @@ copy "$(TargetDir)$(TargetName).pdb" "$(DropboxPath)\CSE Once-In-Awhile'lies\Dat
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>ComCtl32.lib;shell32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>ComCtl32.lib;shell32.lib;$(BGSEEBaseLibPath_RELEASE);%(AdditionalDependencies)</AdditionalDependencies>
       <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <ModuleDefinitionFile>
       </ModuleDefinitionFile>
@@ -299,7 +298,7 @@ copy "$(TargetDir)$(TargetName).pdb" "$(DropboxPath)\CSE Once-In-Awhile'lies\Dat
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>ComCtl32.lib;shell32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>ComCtl32.lib;shell32.lib;$(BGSEEBaseLibPath_RELEASE);%(AdditionalDependencies)</AdditionalDependencies>
       <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <ModuleDefinitionFile>
       </ModuleDefinitionFile>
@@ -355,7 +354,7 @@ copy "$(TargetDir)$(TargetName).pdb" "$(DropboxPath)\CSE Once-In-Awhile'lies\Dat
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>ComCtl32.lib;shell32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>ComCtl32.lib;shell32.lib;$(BGSEEBaseLibPath_DEBUG);%(AdditionalDependencies)</AdditionalDependencies>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
       <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <ModuleDefinitionFile>
@@ -416,7 +415,7 @@ copy "$(TargetDir)$(TargetName).pdb" "$(DropboxPath)\CSE Once-In-Awhile'lies\Dat
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>ComCtl32.lib;shell32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>ComCtl32.lib;shell32.lib;$(BGSEEBaseLibPath_DEBUG);%(AdditionalDependencies)</AdditionalDependencies>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
       <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <ModuleDefinitionFile>
@@ -569,8 +568,8 @@ copy "$(TargetDir)$(TargetName).pdb" "$(DropboxPath)\CSE Once-In-Awhile'lies\Dat
     <ClCompile Include="Exports.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\[Libraries]\BGSEditorExtenderBase\bgsee\BGSEditorExtenderBase_Resource.h" />
-    <ClInclude Include="..\..\[Libraries]\SME Sundries\INIEditGUI_Res.h" />
+    <ClInclude Include="$(BGSEEBaseIncludePath)\bgsee\BGSEditorExtenderBase_Resource.h" />
+    <ClInclude Include="$(SMESundriesIncludePath)\INIEditGUI_Res.h" />
     <ClInclude Include="..\OBSE\obse\HavokBase.h" />
     <ClInclude Include="..\OBSE\obse\HavokCharacters.h" />
     <ClInclude Include="..\OBSE\obse\HavokCollision.h" />
@@ -752,7 +751,7 @@ copy "$(TargetDir)$(TargetName).pdb" "$(DropboxPath)\CSE Once-In-Awhile'lies\Dat
     <ClInclude Include="Exports.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\[Libraries]\BGSEditorExtenderBase\[Resources]\generic.bmp" />
+    <None Include="$(BGSEEBaseIncludePath)\[Resources]\generic.bmp" />
     <None Include="EditorAPI\NiTMap.h" />
     <None Include="Images\antic.bmp" />
     <None Include="Images\automaton.bmp" />
@@ -785,8 +784,8 @@ copy "$(TargetDir)$(TargetName).pdb" "$(DropboxPath)\CSE Once-In-Awhile'lies\Dat
     <None Include="Images\wtf.bmp" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="..\..\[Libraries]\BGSEditorExtenderBase\bgsee\BGSEditorExtenderBase.rc" />
-    <ResourceCompile Include="..\..\[Libraries]\SME Sundries\INIEditGUI_Res.rc">
+    <ResourceCompile Include="$(BGSEEBaseIncludePath)\bgsee\BGSEditorExtenderBase.rc" />
+    <ResourceCompile Include="$(SMESundriesIncludePath)\INIEditGUI_Res.rc">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
       </ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug - Attach Debugger|Win32'">

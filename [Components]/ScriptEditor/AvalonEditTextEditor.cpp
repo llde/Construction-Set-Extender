@@ -868,10 +868,10 @@ void AvalonEditTextEditor::RaiseIntelliSenseInsightHover(intellisense::IntelliSe
 
 	auto ValidatorErrors = ParentScriptDocument->GetMessages(E->Line,
 															 model::components::ScriptDiagnosticMessage::eMessageSource::Validator,
-															 model::components::ScriptDiagnosticMessage::eMessageType::Error);
+															 model::components::ScriptDiagnosticMessage::eMessageType::All);
 	auto CompilerErrors = ParentScriptDocument->GetMessages(E->Line,
 															model::components::ScriptDiagnosticMessage::eMessageSource::Compiler,
-															model::components::ScriptDiagnosticMessage::eMessageType::Error);
+															model::components::ScriptDiagnosticMessage::eMessageType::All);
 
 	if (E->HoveringOverComment && CompilerErrors->Count == 0 && ValidatorErrors->Count == 0)
 		return;

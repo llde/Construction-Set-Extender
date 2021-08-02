@@ -8,93 +8,54 @@ namespace cse
 {
 	namespace hooks
 	{
-		UInt32								ScriptCompileResultBuffer = 0;	// saves the result of a compile operation so as to allow it to go on unhindered
-
-		_DefineNopHdlr(RidScriptErrorMessageBox, 0x004FFFEC, 20);
+		UInt32		ScriptCompileResultBuffer = 0;	// saves the result of a compile operation so as to allow it to go on unhindered
+//		static UInt32 ScriptReportCall = 0;
+		static DWORD (WINAPI* ScriptReportCall)(HWND, const char*, const char*, UINT);
+		static UInt32 UseNewHook = 0;
 		_DefineNopHdlr(RidUnknownFunctionCodeMessage, 0x0050310C, 5);
-		_DefineHookHdlr(RerouteScriptErrors, 0x004FFF9C);
 		_DefineHookHdlr(CompilerPrologReset, 0x00503330);
 		_DefineHookHdlr(CompilerEpilogCheck, 0x0050341F);
 		_DefineHookHdlr(ParseScriptLineOverride, 0x00503401);
 		_DefineHookHdlr(CheckLineLengthLineCount, 0x0050013B);
 		_DefineHookHdlr(ResultScriptErrorNotification, 0x005035EE);
 		_DefineHookHdlr(MaxScriptSizeExceeded, 0x005031DB);
-		_DefineHookHdlr(PrintCompilerErrorToConsoleOverride, 0x00500001 + 5);	// NOTE: since OBSE actually fixes a bug at this location by moving the entire block of code starting at that address
-																				// by 5 bytes (the extra bytes eats into the alignment bytes immediately following the function, so there is no other displacement to RVAs that follow)
-																				// so, we need to account for this change in our hook
-
-		// ERROR HANDLERS
-																		//  f_ScriptBuffer__ConstructLineBuffers
-		DefineCompilerErrorOverrideHook(0x00502781, 0x00502791, 0xC)
-		DefineCompilerErrorOverrideHook(0x00502813, 0x005027AD, 0xC)
-		DefineCompilerErrorOverrideHook(0x005027D3, 0x00502824, 0xC)
-		DefineCompilerErrorOverrideHook(0x005028B5, 0x00502889, 0x8)
-																		// f_ScriptCompiler__CheckSyntax
-		DefineCompilerErrorOverrideHook(0x00500B44, 0x00500B4C, 0x8)	// Mismatching quotes check - this one needs to return immediately , will CTD otherwise
-		DefineCompilerErrorOverrideHook(0x00500B5D, 0x00500A7E, 0x8)
-		DefineCompilerErrorOverrideHook(0x00500B76, 0x00500A8B, 0x8)
-		DefineCompilerErrorOverrideHook(0x00500B8C, 0x00500AAB, 0xC)
-		DefineCompilerErrorOverrideHook(0x00500BBE, 0x00500B11, 0x8)
-
-		DefineCompilerErrorOverrideHook(0x00500BA5, 0x00500B11, 0x8)
-		DefineCompilerErrorOverrideHook(0x00500C09, 0x00500C18, 0xC)
-		DefineCompilerErrorOverrideHook(0x00500C81, 0x00500CB6, 0xC)
-		DefineCompilerErrorOverrideHook(0x00500CA7, 0x00500CB6, 0x8)
-																		// f_ScriptBuffer__ConstructRefVariables
-		DefineCompilerErrorOverrideHook(0x00500669, 0x00500676, 0xC)
-		DefineCompilerErrorOverrideHook(0x0050068F, 0x0050069E, 0xC)
-																		// f_ScriptCompiler__CheckScriptBlockStructure
-		DefineCompilerErrorOverrideHook(0x00500262, 0x0050024F, 0x8)
-		DefineCompilerErrorOverrideHook(0x0050027D, 0x0050024F, 0x8)
-		DefineCompilerErrorOverrideHook(0x00500298, 0x0050024F, 0x8)
-																		// f_ScriptBuffer__CheckReferencedObjects
-		DefineCompilerErrorOverrideHook(0x005001DC, 0x005001C9, 0xC)
+		_DefineHookHdlr(RerouteScriptErrors,  0x004FFF9C);
+		_DefineHookHdlr(OverrideMessageBox, 0x004FFFFA);
+		//There were multiple hooks that are removed to simplify debugging, should be readd seamlessy
+		int __cdecl Porco(const char* format, ...) { return 0; }
 
 		void PatchCompilerErrorDetours()
 		{
-			_MemHdlr(RidScriptErrorMessageBox).WriteNop();
+			if (*(UInt8*)0x004FFFFA == 0xE8) {
+				BGSEECONSOLE_MESSAGE("Relative Call, OBSE patch applyied"); //If not replicate more hooks
+				UseNewHook = 1;
+				*(UInt32*)&ScriptReportCall = *(UInt32*)(0x004FFFFA + 1) + 4 + 1 + 0x004FFFFA;
+				BGSEECONSOLE_MESSAGE("%08X", ScriptReportCall);
+			}
+			else {
+				SafeWrite8(0x004FFFEA, 0x90);
+				SafeWrite8(0x004FFFEA + 1, 0x90);
+				SafeWrite8(0x004FFFE2, 0x90);
+				SafeWrite8(0x004FFFE2 + 1, 0x90);
+				SafeWrite8(0x004FFFDA, 0x90);
+				SafeWrite8(0x004FFFDA + 1, 0x90);
+				WriteRelCall(0x00500006, (UInt32)Porco);  //Stub to avoid nopping a lot of stuffs
+				*(UInt32*)&ScriptReportCall = (UInt32)MessageBoxA;
+				BGSEECONSOLE_MESSAGE("OBSE is not patching the spot, replicate a bit more");
+			}
+
 			_MemHdlr(RidUnknownFunctionCodeMessage).WriteNop();
-			_MemHdlr(RerouteScriptErrors).WriteJump();
 			_MemHdlr(CompilerPrologReset).WriteJump();
 			_MemHdlr(CompilerEpilogCheck).WriteJump();
 			_MemHdlr(ParseScriptLineOverride).WriteJump();
 			_MemHdlr(CheckLineLengthLineCount).WriteJump();
 			_MemHdlr(ResultScriptErrorNotification).WriteJump();
 			_MemHdlr(MaxScriptSizeExceeded).WriteJump();
-			_MemHdlr(PrintCompilerErrorToConsoleOverride).WriteJump();
-
-			GetErrorMemHdlr(0x00502781).WriteJump();
-			GetErrorMemHdlr(0x00502813).WriteJump();
-			GetErrorMemHdlr(0x005027D3).WriteJump();
-			GetErrorMemHdlr(0x005028B5).WriteJump();
-
-			GetErrorMemHdlr(0x00500B44).WriteJump();
-			GetErrorMemHdlr(0x00500B5D).WriteJump();
-			GetErrorMemHdlr(0x00500B76).WriteJump();
-			GetErrorMemHdlr(0x00500B8C).WriteJump();
-			GetErrorMemHdlr(0x00500BBE).WriteJump();
-
-			GetErrorMemHdlr(0x00500BA5).WriteJump();
-			GetErrorMemHdlr(0x00500C09).WriteJump();
-			GetErrorMemHdlr(0x00500C81).WriteJump();
-			GetErrorMemHdlr(0x00500CA7).WriteJump();
-
-			GetErrorMemHdlr(0x00500669).WriteJump();
-			GetErrorMemHdlr(0x0050068F).WriteJump();
-
-			GetErrorMemHdlr(0x00500262).WriteJump();
-			GetErrorMemHdlr(0x0050027D).WriteJump();
-			GetErrorMemHdlr(0x00500298).WriteJump();
-
-			GetErrorMemHdlr(0x005001DC).WriteJump();
+			_MemHdlr(RerouteScriptErrors).WriteJump();
+			_MemHdlr(OverrideMessageBox).WriteJump();
 		}
 
-		void __stdcall DoRerouteScriptErrorsHook(UInt32 Line, const char* Message)
-		{
-			if (TESScriptCompiler::PreventErrorDetours == false)	// don't handle when compiling result scripts or recompiling
-				TESScriptCompiler::AuxiliaryErrorDepot.push_back(TESScriptCompiler::CompilerErrorData(Line, Message));
-		}
-
+		UInt32 line = -1;
 		#define _hhName		RerouteScriptErrors
 		_hhBegin()
 		{
@@ -104,17 +65,58 @@ namespace cse
 				mov     [esp + 0x18], ebx
 				mov     [esp + 0x1C], bx
 
-				mov		ScriptCompileResultBuffer, 0
-				lea     edx, [esp + 0x20]
-				pushad
-				push	edx
-				push	[esi + 0x1C]
-				call	DoRerouteScriptErrorsHook
-				popad
-
+				push	edx 
+				mov		edx, [esi + 0x1C]
+				mov		[line], edx
+				pop		edx 
 				jmp		_hhGetVar(Retn)
 			}
 		}
+
+#define WARNING   0x80000000
+#define SUPPRESSED 0x20000000
+		DWORD WINAPI stub(HWND hwnd, const char* buffer, const char* caption, DWORD flags) {
+			bool isWarning = flags & WARNING;
+			bool isSuppressed = flags & SUPPRESSED;
+			DWORD ret = 0;
+			if (TESScriptCompiler::PreventErrorDetours == false)	// don't handle when compiling result scripts or recompiling
+				TESScriptCompiler::AuxiliaryErrorDepot.push_back(TESScriptCompiler::CompilerErrorData(line, buffer, isWarning));
+			else if(!isSuppressed ) {
+				if (!UseNewHook) flags &= ~WARNING;
+				ret = (*ScriptReportCall)(hwnd, buffer, caption, flags);
+			}
+			if (!isWarning) ScriptCompileResultBuffer = 0;
+			line = -1;
+			return ret;
+		}
+
+		#define _hhName     OverrideMessageBox  //0x004FFFFA
+		_hhBegin() {
+			_hhSetVar(Retn, 0x00500000);
+			__asm {
+				/*
+				push eax
+				mov     al, [TESScriptCompiler::PreventErrorDetours]
+				test     al, al
+				pop eax
+				jz		EARLY
+
+				cmp     UseNewHook, 1
+				jne     oldMethod
+				call	ScriptReportCall
+				jmp		EXIT1
+			OldMethod:
+				call     MessageBoxA
+			EXIT1: */
+				call stub
+				jmp		_hhGetVar(Retn)
+/*
+			EARLY:
+				call stub
+				jmp EXIT1 */
+			}
+		}
+
 
 		#define _hhName		CompilerEpilogCheck
 		_hhBegin()
@@ -236,20 +238,6 @@ namespace cse
 			}
 		}
 
-		#define _hhName		PrintCompilerErrorToConsoleOverride
-		_hhBegin()
-		{
-			_hhSetVar(Retn, 0x00500006 + 5);
-			_hhSetVar(Call, 0x00403490);
-			__asm
-			{
-				test	TESScriptCompiler::PrintErrorsToConsole, 1
-				jz		SKIP
-				call	_hhGetVar(Call)
-			SKIP:
-				jmp		_hhGetVar(Retn)
-			}
-		}
 	}
 }
 

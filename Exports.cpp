@@ -302,25 +302,26 @@ bool CompileScript(ScriptCompileData* Data)
 			_DATAHANDLER->SortScripts();
 			Data->Script.FillScriptData(ScriptForm);
 		}
-		else
+
+		Data->CompileErrorData.Count = TESScriptCompiler::AuxiliaryErrorDepot.size();
+
+		if (Data->CompileErrorData.Count)
 		{
-			Data->CompileErrorData.Count = TESScriptCompiler::AuxiliaryErrorDepot.size();
-			if (TESScriptCompiler::AuxiliaryErrorDepot.size())
+			Data->CompileErrorData.ErrorListHead = new ScriptErrorListData::ErrorData[Data->CompileErrorData.Count];
+
+			for (int i = 0; i < Data->CompileErrorData.Count; i++)
 			{
-				Data->CompileErrorData.ErrorListHead = new ScriptErrorListData::ErrorData[Data->CompileErrorData.Count];
-
-				for (int i = 0; i < Data->CompileErrorData.Count; i++)
-				{
-					TESScriptCompiler::CompilerErrorData* Error = &TESScriptCompiler::AuxiliaryErrorDepot[i];
-					Data->CompileErrorData.ErrorListHead[i].Line = Error->Line;
-					Data->CompileErrorData.ErrorListHead[i].Message = Error->Message.c_str();
-				}
+				TESScriptCompiler::CompilerErrorData* Error = &TESScriptCompiler::AuxiliaryErrorDepot[i];
+				Data->CompileErrorData.ErrorListHead[i].Line = Error->Line;
+				Data->CompileErrorData.ErrorListHead[i].Message = Error->Message.c_str();
+				Data->CompileErrorData.ErrorListHead[i].IsWarning = Error->IsWarning;
 			}
-			else
-				Data->CompileErrorData.ErrorListHead = nullptr;
-
-			ScriptForm->SetText(OldText->c_str());
 		}
+		else //TODO is the ErrorListHead leaking?
+			Data->CompileErrorData.ErrorListHead = nullptr;
+
+		if(!ScriptForm->compileResult)
+			ScriptForm->SetText(OldText->c_str());
 
 		OldText->DeleteInstance();
 	}

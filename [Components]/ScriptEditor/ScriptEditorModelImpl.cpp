@@ -303,19 +303,18 @@ void ScriptDocument::EndScriptCompilation(ScriptCompilationData^ Data)
 			OnStateChangedBytecode(Bytecode, BytecodeLength, PreprocessedScriptText);
 			Dirty = false;
 		}
-		else
+		for (int i = 0; i < Data->CompileResult->CompileErrorData.Count; i++)
 		{
-			for (int i = 0; i < Data->CompileResult->CompileErrorData.Count; i++)
-			{
-				String^ Message = gcnew String(Data->CompileResult->CompileErrorData.ErrorListHead[i].Message);
-				Message = Message->Replace(kRepeatedString, String::Empty);
+			String^ Message = gcnew String(Data->CompileResult->CompileErrorData.ErrorListHead[i].Message);
+			Message = Message->Replace(kRepeatedString, String::Empty);
 
-				int Line = Data->CompileResult->CompileErrorData.ErrorListHead[i].Line;
-				if (Line < 1)
-					Line = 1;
+			int Line = Data->CompileResult->CompileErrorData.ErrorListHead[i].Line;
+			bool Warning = Data->CompileResult->CompileErrorData.ErrorListHead[i].IsWarning;
+			if (Line < 1)
+				Line = 1;
 
-				AddMessage(Line, Message, ScriptDiagnosticMessage::eMessageType::Error, ScriptDiagnosticMessage::eMessageSource::Compiler);
-			}
+			AddMessage(Line, Message, Warning ? ScriptDiagnosticMessage::eMessageType::Warning : ScriptDiagnosticMessage::eMessageType::Error, ScriptDiagnosticMessage::eMessageSource::Compiler);
+
 		}
 	}
 
