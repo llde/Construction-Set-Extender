@@ -898,9 +898,9 @@ bool ScriptEditorController::SaveDocument(model::IScriptDocument^ Document, mode
 	}
 
 	bool SaveResult = Document->Save(SaveOperation);
+	View->GetComponentByRole(view::eViewRole::Messages_DockPanel)->AsDockablePane()->Focus();
 	if (!SaveResult && BoundDocument == Document)
 	{
-		View->GetComponentByRole(view::eViewRole::Messages_DockPanel)->AsDockablePane()->Focus();
 		View->ShowNotification("Script compilation failed.\nCheck the message log for more information.",
 							   view::components::CommonIcons::Get()->ErrorLarge,
 							   3000);
