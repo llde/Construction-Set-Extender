@@ -164,6 +164,7 @@ namespace componentDLLInterface
 		{
 			UInt32 Line;
 			const char* Message;
+			bool   IsWarning;
 		};
 
 		ErrorData* ErrorListHead;
