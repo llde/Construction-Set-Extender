@@ -92,7 +92,7 @@ namespace cse
 		void __stdcall DoRerouteScriptErrorsHook(UInt32 Line, const char* Message)
 		{
 			if (TESScriptCompiler::PreventErrorDetours == false)	// don't handle when compiling result scripts or recompiling
-				TESScriptCompiler::AuxiliaryErrorDepot.push_back(TESScriptCompiler::CompilerErrorData(Line, Message));
+				TESScriptCompiler::AuxiliaryErrorDepot.push_back(TESScriptCompiler::CompilerErrorData(Line, Message,false));
 		}
 
 		#define _hhName		RerouteScriptErrors
