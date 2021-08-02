@@ -721,7 +721,7 @@
     <ClInclude Include="..\OBSE\obse\NiRenderer.h">
       <Filter>OBSE</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\[Libraries]\SME Sundries\INIEditGUI_Res.h">
+    <ClInclude Include="SME Sundries\INIEditGUI_Res.h">
       <Filter>Resources</Filter>
     </ClInclude>
     <ClInclude Include="Construction Set Extender_Resource.h">
@@ -769,7 +769,7 @@
     <ClInclude Include="EditorAPI\TESObjectLAND.h">
       <Filter>EditorAPI\Forms\World</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\[Libraries]\BGSEditorExtenderBase\bgsee\BGSEditorExtenderBase_Resource.h">
+    <ClInclude Include="BGSEditorExtenderBase\bgsee\BGSEditorExtenderBase_Resource.h">
       <Filter>Resources</Filter>
     </ClInclude>
     <ClInclude Include="Achievements.h">
@@ -1018,7 +1018,7 @@
     <None Include="Images\lost.bmp">
       <Filter>Resources\Images</Filter>
     </None>
-    <None Include="..\..\[Libraries]\BGSEditorExtenderBase\[Resources]\generic.bmp">
+    <None Include="BGSEditorExtenderBase\[Resources]\generic.bmp">
       <Filter>Resources\Images</Filter>
     </None>
     <None Include="Images\fakevoice.bmp">
@@ -1041,13 +1041,13 @@
     <ResourceCompile Include="Construction Set Extender.rc">
       <Filter>Resources</Filter>
     </ResourceCompile>
-    <ResourceCompile Include="..\..\[Libraries]\SME Sundries\INIEditGUI_Res.rc">
+    <ResourceCompile Include="SME Sundries\INIEditGUI_Res.rc">
       <Filter>Resources</Filter>
     </ResourceCompile>
     <ResourceCompile Include="VersionInfo.rc">
       <Filter>Resources</Filter>
     </ResourceCompile>
-    <ResourceCompile Include="..\..\[Libraries]\BGSEditorExtenderBase\bgsee\BGSEditorExtenderBase.rc">
+    <ResourceCompile Include="BGSEditorExtenderBase\bgsee\BGSEditorExtenderBase.rc">
       <Filter>Resources</Filter>
     </ResourceCompile>
   </ItemGroup>

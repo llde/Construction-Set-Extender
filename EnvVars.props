@@ -2,19 +2,24 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ImportGroup Label="PropertySheets" />
   <PropertyGroup Label="UserMacros">
-    <CrashRptIncludePath>C:\Users\shadeMe\Documents\VC++ LIB\CrashRpt\include</CrashRptIncludePath>
-    <CrashRptLibPath>C:\Users\shadeMe\Documents\VC++ LIB\CrashRpt\lib</CrashRptLibPath>
-    <DirectXIncludePath>C:\Users\shadeMe\Documents\VC++ LIB\DirectX\Include</DirectXIncludePath>
-    <DirectXLibPath>C:\Users\shadeMe\Documents\VC++ LIB\DirectX\Lib\x86</DirectXLibPath>
-    <SMESundriesIncludePath>C:\Users\shadeMe\Documents\[TES]\[Code]\[Libraries]\SME Sundries</SMESundriesIncludePath>
-    <XSECommonIncludePath>C:\Users\shadeMe\Documents\[TES]\[Code]\[Libraries]\xSE Common</XSECommonIncludePath>
-    <BGSEEBaseIncludePath>C:\Users\shadeMe\Documents\[TES]\[Code]\[Libraries]\BGSEditorExtenderBase</BGSEEBaseIncludePath>
-    <BGSEEBaseLibPath_DEBUG>C:\Users\shadeMe\Documents\[TES]\[Code]\[Libraries]\BGSEditorExtenderBase\bgsee\Debug</BGSEEBaseLibPath_DEBUG>
-    <BGSEEBaseLibPath_RELEASE>C:\Users\shadeMe\Documents\[TES]\[Code]\[Libraries]\BGSEditorExtenderBase\bgsee\Release</BGSEEBaseLibPath_RELEASE>
+    <CrashRptIncludePath>$(SolutionDir)..\CrashRpt\include</CrashRptIncludePath>
+    <CrashRptLibPath>$(SolutionDir)..\CrashRpt\lib</CrashRptLibPath>
+    <SMESundriesIncludePath>$(SolutionDir)..\SME Sundries</SMESundriesIncludePath>
+    <XSECommonIncludePath>$(SolutionDir)..\xSE Common</XSECommonIncludePath>
+    <BGSEEBaseIncludePath>$(SolutionDir)..\BGSEditorExtenderBase</BGSEEBaseIncludePath>
+    <BGSEEBaseLibPath_DEBUG>$(SolutionDir)..\BGSEditorExtenderBase\bgsee\Debug</BGSEEBaseLibPath_DEBUG>
+    <BGSEEBaseLibPath_RELEASE>$(SolutionDir)..\BGSEditorExtenderBase\bgsee\Release</BGSEEBaseLibPath_RELEASE>
+	 <DirectXIncludePath>C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Include</DirectXIncludePath>
+    <DirectXLibPath>C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Lib\x86</DirectXLibPath>
+	<OblivionPath>Y:\Oblivion</OblivionPath>
   </PropertyGroup>
   <PropertyGroup />
   <ItemDefinitionGroup />
   <ItemGroup>
+      <BuildMacro Include="OblivionPath">
+      <Value>$(OblivionPath)</Value>
+      <EnvironmentVariable>true</EnvironmentVariable>
+    </BuildMacro>
     <BuildMacro Include="CrashRptIncludePath">
       <Value>$(CrashRptIncludePath)</Value>
       <EnvironmentVariable>true</EnvironmentVariable>
